@@ -1,43 +1,35 @@
 import { useState } from "react";
 import data from "../data.json";
-import { createPortal } from "react-dom";
 
 function Comments() {
   const [deletePopUp, setDeletePopUp] = useState(false);
-  const [commentsData, setCommentsData] = useState(data);
+  const [currentId, setCurrentId] = useState<number | undefined>(0);
 
   const handleDeleteComment = () => {
     // Find if in one of elements has at least one replie in object
-    const commentReplies = commentsData.comments.find(
-      (e) => e.replies.length !== 0
-    );
-
-    // console.log(commentReplies);
+    const commentReplies = data.comments.find((e) => e.replies.length !== 0);
 
     // Find if one of replies user is the current user
     const currentUserReplie = commentReplies?.replies.find(
-      (e) => e.user.username === commentsData.currentUser.username
+      (e) => e.user.username === data.currentUser.username
     );
 
-    console.log(currentUserReplie?.id);
-
     // Filter the object replie from data
+    setCurrentId(currentUserReplie?.id);
 
-    // setCommentsData((prev) =>
-    //   prev.comments.filter((e) => e.id === currentUserReplie?.id)
-    // );
-
-    // commentReplies?.replies.filter(
-    //   (e) => e.user.username === commentsData.currentUser.username
-    // );
-
-    // console.log(comments);
+    setDeletePopUp(false);
   };
 
   return (
     <>
+      {/* Background overlay */}
       {deletePopUp && (
-        <div className="bg-neutral_white rounded-md p-6 mx-auto w-[90%] grid place-items-center absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%]">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
+      )}
+
+      {/* Delete popup */}
+      {deletePopUp && (
+        <div className="bg-neutral_white rounded-md p-6 mx-auto w-[90%] grid place-items-center fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-20">
           <div className="grid gap-4">
             <h1 className="text-dark_blue font-bold text-xl">Delete comment</h1>
             <p className="text-dark_blue">
@@ -64,8 +56,14 @@ function Comments() {
         </div>
       )}
 
-      <div className="grid gap-4 mx-auto w-[90%]">
-        {commentsData.comments.map((comment) => (
+      {/* Main content */}
+      <div
+        className={`grid gap-4 mx-auto w-[90%] ${
+          deletePopUp ? "opacity-50 pointer-events-none" : "opacity-100"
+        }`}
+      >
+        {/* Comments */}
+        {data.comments.map((comment) => (
           <div
             key={comment.id}
             className="w-full p-4 bg-neutral_white rounded-md"
@@ -102,89 +100,92 @@ function Comments() {
           </div>
         ))}
 
+        {/*  Replies */}
         <div className="relative">
           <div className="absolute bg-light_gray rounded-md h-full w-[3px]"></div>
-          {commentsData.comments.map(
+          {data.comments.map(
             (comment) =>
               comment.replies &&
-              comment.replies.map((replie) => (
-                <div
-                  key={replie.id}
-                  className="ml-auto w-[95%] p-4 bg-neutral_white rounded-md"
-                >
-                  <div className="flex gap-4 items-center">
-                    <img
-                      className="w-[35px]"
-                      src={replie.user.image.png}
-                      alt=""
-                    />
+              comment.replies
+                .filter((replie) => replie.id !== currentId)
+                .map((replie) => (
+                  <div
+                    key={replie.id}
+                    className="ml-auto w-[95%] p-4 bg-neutral_white rounded-md"
+                  >
+                    <div className="flex gap-4 items-center">
+                      <img
+                        className="w-[35px]"
+                        src={replie.user.image.png}
+                        alt=""
+                      />
 
-                    <div className="flex gap-2 items-center">
-                      <span className="font-bold">{replie.user.username}</span>
-                      {replie.user.username ===
-                        commentsData.currentUser.username && (
-                        <span className="bg-moderate_blue px-2  text-neutral_white text-[12px] rounded-sm">
-                          you
+                      <div className="flex gap-2 items-center">
+                        <span className="font-bold">
+                          {replie.user.username}
                         </span>
-                      )}
-                    </div>
-                    <span className="text-grayish_blue">
-                      {replie.createdAt}
-                    </span>
-                  </div>
-
-                  <p className="my-4 text-[16px] text-grayish_blue">
-                    <span className="cursor-pointer text-moderate_blue font-bold">
-                      @{replie.replyingTo}
-                    </span>{" "}
-                    {replie.content}
-                  </p>
-
-                  <div className="flex justify-between">
-                    <div className="flex items-center">
-                      <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-md">
-                        <img src="/icon-plus.svg" alt="" />
-                      </button>
-                      <span className="bg-very_light_gray h-[40px] w-[20px] text-moderate_blue grid place-items-center font-bold">
-                        {replie.score}
+                        {replie.user.username === data.currentUser.username && (
+                          <span className="bg-moderate_blue px-2  text-neutral_white text-[12px] rounded-sm">
+                            you
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-grayish_blue">
+                        {replie.createdAt}
                       </span>
-                      <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-md">
-                        <img src="/icon-minus.svg" alt="" />
-                      </button>
                     </div>
 
-                    {replie.user.username ===
-                    commentsData.currentUser.username ? (
-                      <div className="flex gap-4">
-                        <button
-                          onClick={() => setDeletePopUp(true)}
-                          className="flex items-center gap-2 text-soft_red font-bold"
-                        >
-                          <div>
-                            <img src="/icon-delete.svg" alt="" />
-                          </div>
-                          Delete
+                    <p className="my-4 text-[16px] text-grayish_blue">
+                      <span className="cursor-pointer text-moderate_blue font-bold">
+                        @{replie.replyingTo}
+                      </span>{" "}
+                      {replie.content}
+                    </p>
+
+                    <div className="flex justify-between">
+                      <div className="flex items-center">
+                        <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-md">
+                          <img src="/icon-plus.svg" alt="" />
                         </button>
-                        <button className="flex items-center gap-2 text-moderate_blue font-bold">
-                          <div>
-                            <img src="/icon-edit.svg" alt="" />
-                          </div>
-                          Edit
+                        <span className="bg-very_light_gray h-[40px] w-[20px] text-moderate_blue grid place-items-center font-bold">
+                          {replie.score}
+                        </span>
+                        <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-md">
+                          <img src="/icon-minus.svg" alt="" />
                         </button>
                       </div>
-                    ) : (
-                      <button className="flex gap-2 items-center">
-                        <div>
-                          <img src="/icon-reply.svg" alt="" />
+
+                      {replie.user.username === data.currentUser.username ? (
+                        <div className="flex gap-4">
+                          <button
+                            onClick={() => setDeletePopUp(true)}
+                            className="flex items-center gap-2 text-soft_red font-bold"
+                          >
+                            <div>
+                              <img src="/icon-delete.svg" alt="" />
+                            </div>
+                            Delete
+                          </button>
+                          <button className="flex items-center gap-2 text-moderate_blue font-bold">
+                            <div>
+                              <img src="/icon-edit.svg" alt="" />
+                            </div>
+                            Edit
+                          </button>
                         </div>
-                        <span className="font-bold text-moderate_blue">
-                          Reply
-                        </span>
-                      </button>
-                    )}
+                      ) : (
+                        <button className="flex gap-2 items-center">
+                          <div>
+                            <img src="/icon-reply.svg" alt="" />
+                          </div>
+                          <span className="font-bold text-moderate_blue">
+                            Reply
+                          </span>
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
+                ))
           )}
         </div>
       </div>
