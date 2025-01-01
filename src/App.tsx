@@ -3,7 +3,7 @@ import UserComment from "./components/UserComment";
 
 function App() {
   return (
-    <main>
+    <main className="md:mx-auto md:w-[50%]">
       <Comments />
       <UserComment />
     </main>

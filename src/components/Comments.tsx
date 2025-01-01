@@ -66,19 +66,38 @@ function Comments() {
         {data.comments.map((comment) => (
           <div
             key={comment.id}
-            className="w-full p-4 bg-neutral_white rounded-md"
+            className="w-full p-4 bg-neutral_white rounded-md flex items-start gap-6 relative pt-6"
           >
-            <div className="flex gap-4 items-center">
-              <img className="w-[35px]" src={comment.user.image.png} alt="" />
-              <span className="font-bold">{comment.user.username}</span>
-              <span className="text-grayish_blue">{comment.createdAt}</span>
+            <div className="grid ml-3 items-center max-md:hidden">
+              <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-tr-md rounded-tl-md">
+                <img src="/icon-plus.svg" alt="" />
+              </button>
+              <span className="w-full bg-very_light_gray h-[40px]  text-moderate_blue grid place-items-center font-bold">
+                {comment.score}
+              </span>
+              <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-br-md rounded-bl-md">
+                <img src="/icon-minus.svg" alt="" />
+              </button>
             </div>
 
-            <p className="my-4 text-[16px] text-grayish_blue">
-              {comment.content}
-            </p>
+            <div>
+              <div className="flex gap-4 items-center">
+                <img className="w-[35px]" src={comment.user.image.png} alt="" />
+                <span className="font-bold">{comment.user.username}</span>
+                <span className="text-dark_blue">{comment.createdAt}</span>
+              </div>
 
-            <div className="flex justify-between">
+              <p className="my-4 text-[16px] text-grayish_blue">
+                {comment.content}
+              </p>
+            </div>
+
+            <button className="max-md:hidden flex items-center gap-4 absolute right-6">
+              <img src="/icon-reply.svg" alt="" />
+              <span className="font-bold text-moderate_blue">Reply</span>
+            </button>
+
+            <div className="flex justify-between md:hidden">
               <div className="flex items-center">
                 <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-md">
                   <img src="/icon-plus.svg" alt="" />
@@ -90,6 +109,7 @@ function Comments() {
                   <img src="/icon-minus.svg" alt="" />
                 </button>
               </div>
+
               <button className="flex gap-2 items-center">
                 <div>
                   <img src="/icon-reply.svg" alt="" />
@@ -102,7 +122,7 @@ function Comments() {
 
         {/*  Replies */}
         <div className="relative">
-          <div className="absolute bg-light_gray rounded-md h-full w-[3px]"></div>
+          <div className="absolute left-12 bg-light_gray rounded-md h-[93%] w-[3px] "></div>
           {data.comments.map(
             (comment) =>
               comment.replies &&
@@ -111,39 +131,54 @@ function Comments() {
                 .map((replie) => (
                   <div
                     key={replie.id}
-                    className="ml-auto w-[95%] p-4 bg-neutral_white rounded-md"
+                    className="ml-auto w-[95%] md:w-[89%] p-4 bg-neutral_white rounded-md mb-4 md:flex items-start gap-6 relative md:pt-6"
                   >
-                    <div className="flex gap-4 items-center">
-                      <img
-                        className="w-[35px]"
-                        src={replie.user.image.png}
-                        alt=""
-                      />
-
-                      <div className="flex gap-2 items-center">
-                        <span className="font-bold">
-                          {replie.user.username}
-                        </span>
-                        {replie.user.username === data.currentUser.username && (
-                          <span className="bg-moderate_blue px-2  text-neutral_white text-[12px] rounded-sm">
-                            you
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-grayish_blue">
-                        {replie.createdAt}
+                    <div className="grid ml-3 items-center max-md:hidden">
+                      <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-tr-md rounded-tl-md">
+                        <img src="/icon-plus.svg" alt="" />
+                      </button>
+                      <span className="w-full bg-very_light_gray h-[40px]  text-moderate_blue grid place-items-center font-bold">
+                        {comment.score}
                       </span>
+                      <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-br-md rounded-bl-md">
+                        <img src="/icon-minus.svg" alt="" />
+                      </button>
                     </div>
 
-                    <p className="my-4 text-[16px] text-grayish_blue">
-                      <span className="cursor-pointer text-moderate_blue font-bold">
-                        @{replie.replyingTo}
-                      </span>{" "}
-                      {replie.content}
-                    </p>
+                    <div>
+                      <div className="flex gap-4 items-center">
+                        <img
+                          className="w-[35px]"
+                          src={replie.user.image.png}
+                          alt=""
+                        />
+
+                        <div className="flex gap-2 items-center">
+                          <span className="font-bold">
+                            {replie.user.username}
+                          </span>
+                          {replie.user.username ===
+                            data.currentUser.username && (
+                            <span className="bg-moderate_blue px-2  text-neutral_white text-[12px] rounded-sm">
+                              you
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-dark_blue">
+                          {replie.createdAt}
+                        </span>
+                      </div>
+
+                      <p className="my-4 text-[16px] text-grayish_blue">
+                        <span className="cursor-pointer text-moderate_blue font-bold">
+                          @{replie.replyingTo}{" "}
+                        </span>
+                        {replie.content}
+                      </p>
+                    </div>
 
                     <div className="flex justify-between">
-                      <div className="flex items-center">
+                      <div className="flex items-center  md:hidden">
                         <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-md">
                           <img src="/icon-plus.svg" alt="" />
                         </button>
@@ -156,28 +191,22 @@ function Comments() {
                       </div>
 
                       {replie.user.username === data.currentUser.username ? (
-                        <div className="flex gap-4">
+                        <div className="flex gap-6 absolute right-6">
                           <button
                             onClick={() => setDeletePopUp(true)}
                             className="flex items-center gap-2 text-soft_red font-bold"
                           >
-                            <div>
-                              <img src="/icon-delete.svg" alt="" />
-                            </div>
+                            <img src="/icon-delete.svg" alt="" />
                             Delete
                           </button>
                           <button className="flex items-center gap-2 text-moderate_blue font-bold">
-                            <div>
-                              <img src="/icon-edit.svg" alt="" />
-                            </div>
+                            <img src="/icon-edit.svg" alt="" />
                             Edit
                           </button>
                         </div>
                       ) : (
-                        <button className="flex gap-2 items-center">
-                          <div>
-                            <img src="/icon-reply.svg" alt="" />
-                          </div>
+                        <button className="max-md:hidden flex items-center gap-4 absolute right-6">
+                          <img src="/icon-reply.svg" alt="" />
                           <span className="font-bold text-moderate_blue">
                             Reply
                           </span>

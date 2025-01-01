@@ -14,15 +14,20 @@ function UserComment() {
   };
 
   return (
-    <div className="shadow-sm bg-neutral_white mt-4 p-3 rounded-md mx-auto w-[90%]">
+    <div className="shadow-sm bg-neutral_white mt-2 py-6 px-6 rounded-md mx-auto w-[90%] md:flex items-start gap-4">
+      <img
+        className="w-[40px] max-md:hidden"
+        src={data.currentUser.image.png}
+        alt={data.currentUser.username}
+      />
       <textarea
         onChange={(e) => handleOnChange(e)}
-        className="focus:border-moderate_blue focus-visible:border-moderate_blue hover:border-moderate_blue w-full border border-light_gray px-6 py-3 h-[75px] rounded-md placeholder:text-dark_blue"
+        className="resize-none focus:border-moderate_blue focus-visible:border-moderate_blue hover:border-moderate_blue w-full border border-light_gray px-6 py-3 h-[75px] rounded-md placeholder:text-dark_blue"
         placeholder="Add a comment..."
       ></textarea>
-      <div className="mt-2 flex justify-between items-center">
+      <div className="mt-2 md:mt-0 flex justify-between items-center">
         <img
-          className="w-[30px]"
+          className="w-[30px] md:hidden"
           src={data.currentUser.image.png}
           alt={data.currentUser.username}
         />
