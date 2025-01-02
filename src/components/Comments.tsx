@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import data from "../data.json";
 
 function Comments() {
   const [deletePopUp, setDeletePopUp] = useState(false);
+  const [editComment, setEditComment] = useState(false);
+  const [inputComment, setInputComment] = useState(""); // @${replie.replyingTo} ${replie.content}
   const [currentId, setCurrentId] = useState<number | undefined>(0);
 
   const handleDeleteComment = () => {
@@ -18,6 +20,15 @@ function Comments() {
     setCurrentId(currentUserReplie?.id);
 
     setDeletePopUp(false);
+  };
+
+  const handleEditComment = () => {
+    setEditComment(true);
+  };
+
+  const handleChangeComment = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setInputComment(value);
   };
 
   return (
@@ -122,7 +133,7 @@ function Comments() {
 
         {/*  Replies */}
         <div className="relative">
-          <div className="absolute left-12 bg-light_gray rounded-md h-[93%] w-[3px] "></div>
+          <div className="absolute left-12 bg-light_gray rounded-md h-[93%] w-[3px]"></div>
           {data.comments.map(
             (comment) =>
               comment.replies &&
@@ -145,7 +156,7 @@ function Comments() {
                       </button>
                     </div>
 
-                    <div>
+                    <div className="w-full">
                       <div className="flex gap-4 items-center">
                         <img
                           className="w-[35px]"
@@ -169,16 +180,32 @@ function Comments() {
                         </span>
                       </div>
 
-                      <p className="my-4 text-[16px] text-grayish_blue">
-                        <span className="cursor-pointer text-moderate_blue font-bold">
-                          @{replie.replyingTo}{" "}
-                        </span>
-                        {replie.content}
-                      </p>
+                      {replie.user.username === data.currentUser.username &&
+                      editComment ? (
+                        <>
+                          <textarea
+                            rows={3}
+                            className="mt-4 text-[16px] px-6 py-2 text-grayish_blue resize-none overflow-hidden w-full rounded-md border border-moderate_blue"
+                            // value={`@${replie.replyingTo} ${replie.content}`}
+                            value={inputComment}
+                            onChange={(e) => handleChangeComment(e)}
+                          ></textarea>
+                          <button className="block mt-2 bg-moderate_blue text-neutral_white rounded-md py-2.5 px-7 w-fit ml-auto">
+                            UPDATE
+                          </button>
+                        </>
+                      ) : (
+                        <p className="my-4 text-[16px] text-grayish_blue">
+                          <span className="cursor-pointer text-moderate_blue font-bold">
+                            @{replie.replyingTo}{" "}
+                          </span>
+                          {replie.content}
+                        </p>
+                      )}
                     </div>
 
                     <div className="flex justify-between">
-                      <div className="flex items-center  md:hidden">
+                      <div className="flex items-center md:hidden">
                         <button className="bg-very_light_gray grid place-items-center h-[40px] w-[45px] rounded-md">
                           <img src="/icon-plus.svg" alt="" />
                         </button>
@@ -199,7 +226,10 @@ function Comments() {
                             <img src="/icon-delete.svg" alt="" />
                             Delete
                           </button>
-                          <button className="flex items-center gap-2 text-moderate_blue font-bold">
+                          <button
+                            onClick={handleEditComment}
+                            className="flex items-center gap-2 text-moderate_blue font-bold"
+                          >
                             <img src="/icon-edit.svg" alt="" />
                             Edit
                           </button>
