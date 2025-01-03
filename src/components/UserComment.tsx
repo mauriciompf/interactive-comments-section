@@ -21,6 +21,7 @@ function UserComment() {
         alt={data.currentUser.username}
       />
       <textarea
+        maxLength={207}
         onChange={(e) => handleOnChange(e)}
         className="resize-none focus:border-moderate_blue focus-visible:border-moderate_blue hover:border-moderate_blue w-full border border-light_gray px-6 py-3 h-[75px] rounded-md placeholder:text-dark_blue"
         placeholder="Add a comment..."

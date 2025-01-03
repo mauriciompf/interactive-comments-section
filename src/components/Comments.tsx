@@ -26,9 +26,21 @@ function Comments() {
     setEditComment(true);
   };
 
-  const handleChangeComment = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChangeComment = (
+    e: ChangeEvent<HTMLTextAreaElement>,
+    replieTo: string
+  ) => {
     const value = e.target.value;
+
+    if (!value.startsWith(`@${replieTo} `)) return;
+
     setInputComment(value);
+  };
+
+  const handleUpdateComment = (replieTo: string) => {
+    if (inputComment === `@${replieTo} `) return;
+
+    setEditComment(false);
   };
 
   return (
@@ -40,7 +52,7 @@ function Comments() {
 
       {/* Delete popup */}
       {deletePopUp && (
-        <div className="bg-neutral_white rounded-md p-6 mx-auto w-[90%] grid place-items-center fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-20">
+        <div className="bg-neutral_white rounded-md p-6 mx-auto w-[90%] grid place-items-center fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-20 md:w-[20%]">
           <div className="grid gap-4">
             <h1 className="text-dark_blue font-bold text-xl">Delete comment</h1>
             <p className="text-dark_blue">
@@ -184,13 +196,23 @@ function Comments() {
                       editComment ? (
                         <>
                           <textarea
+                            maxLength={207}
                             rows={3}
-                            className="mt-4 text-[16px] px-6 py-2 text-grayish_blue resize-none overflow-hidden w-full rounded-md border border-moderate_blue"
-                            // value={`@${replie.replyingTo} ${replie.content}`}
-                            value={inputComment}
-                            onChange={(e) => handleChangeComment(e)}
+                            className="mt-4 text-[16px] px-6 py-4 text-grayish_blue resize-none  w-full rounded-md border border-moderate_blue"
+                            value={
+                              inputComment ||
+                              `@${replie.replyingTo} ${replie.content}`
+                            }
+                            onChange={(e) =>
+                              handleChangeComment(e, replie.replyingTo)
+                            }
                           ></textarea>
-                          <button className="block mt-2 bg-moderate_blue text-neutral_white rounded-md py-2.5 px-7 w-fit ml-auto">
+                          <button
+                            onClick={() =>
+                              handleUpdateComment(replie.replyingTo)
+                            }
+                            className="block mt-2 bg-moderate_blue text-neutral_white rounded-md py-2.5 px-7 w-fit ml-auto"
+                          >
                             UPDATE
                           </button>
                         </>
@@ -199,7 +221,12 @@ function Comments() {
                           <span className="cursor-pointer text-moderate_blue font-bold">
                             @{replie.replyingTo}{" "}
                           </span>
-                          {replie.content}
+                          {replie.user.username === data.currentUser.username
+                            ? inputComment.replace(
+                                `@${replie.replyingTo} `,
+                                " "
+                              ) || replie.content
+                            : replie.content}
                         </p>
                       )}
                     </div>
